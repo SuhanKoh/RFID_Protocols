@@ -40,10 +40,12 @@ public class Main {
         long startTime = System.nanoTime();
 
         while (!RfidReader.getInstance().broadcastTags(listOfRfidTags, timeSlot)) {
-            System.out.println("Round # " + round++);
+            System.out.println("\n======= Round: " + round++ + " ========");
+
+            //Tag passed back ID to the tags here.
             for (RfidTag tag : timeSlot) {
                 if (tag != null) {
-                    System.out.println("Transmitted: " + tag.getRfidTagId());
+                    System.out.println("Transmitted: " + tag.getRfidTagId() + "  Already transmitted? " + tag.isTransmitted());
                     tag.transmit(); // Assumed no delay on transmit
                 }
             }
@@ -52,7 +54,7 @@ public class Main {
 
         long endTime = System.nanoTime();
 
-        System.out.println("Total time spent transmitting " + numberOfTags + " RFID tags: "
+        System.out.println("\n\nTotal time spent transmitting " + numberOfTags + " RFID tags: "
                 + (endTime - startTime) / 1000000000.0
                 + " second(s)"
                 + " with "
