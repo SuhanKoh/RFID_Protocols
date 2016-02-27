@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class RfidReader {
 
-    public static final int MAX_NUMBER_OF_TIME_SLOT = 100;
+//    public static final int MAX_NUMBER_OF_TIME_SLOT = 100;
 
     private static RfidReader _instance = null;
     private static List<RfidTag> timeSlot;
@@ -59,12 +59,14 @@ public class RfidReader {
             if (!rfidTags.get(i).isTransmitted()) { //Check if tag is already transmitted
                 finishedAllTags = false;
 
-                int timeSlotPosition = rfidTags.get(i).attemptTransmit(MAX_NUMBER_OF_TIME_SLOT);
+                int timeSlotPosition = rfidTags.get(i).attemptTransmit(rfidTags.size());
 
                 if (timeSlot.get(timeSlotPosition) == null) { //Place rfid on this time slot
                     timeSlot.set(timeSlotPosition, rfidTags.get(i));
-
+                    rfidTags.remove(i--);
                 } else { //Conflict happens
+
+                    rfidTags.add(timeSlot.get(timeSlotPosition));
                     timeSlot.set(timeSlotPosition, null); //Setting the existing tag to next round
                 }
 

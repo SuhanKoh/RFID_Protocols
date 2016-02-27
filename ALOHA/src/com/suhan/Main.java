@@ -1,5 +1,6 @@
 package com.suhan;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +23,14 @@ import java.util.List;
  */
 public class Main {
 
+    public static ArrayList<RfidTag> listOfRfidTags;
+
     public static void main(String[] args) {
 
-        int numberOfTags = 6000;
+        int numberOfTags = 8000;
 
         //Initiate the tags (We assumed we know all the tags)
-        List<RfidTag> listOfRfidTags = new LinkedList<RfidTag>();
+        listOfRfidTags = new ArrayList<RfidTag>();
         for (int i = 0; i < numberOfTags; i++) {
             listOfRfidTags.add(new RfidTag());
         }
@@ -40,15 +43,17 @@ public class Main {
         long startTime = System.nanoTime();
 
         while (!RfidReader.getInstance().broadcastTags(listOfRfidTags, timeSlot)) {
-            System.out.println("\n======= Round: " + round++ + " ========");
-
+            System.out.println("\n======= Round: " + round++ + " ======== Time Slot Size: " + timeSlot.size() + " Tag size: " + listOfRfidTags.size());
+            int size = 0;
             //Tag passed back ID to the tags here.
             for (RfidTag tag : timeSlot) {
                 if (tag != null) {
                     System.out.println("Transmitted: " + tag.getRfidTagId() + "  Already transmitted? " + tag.isTransmitted());
                     tag.transmit(); // Assumed no delay on transmit
+                    size++;
                 }
             }
+
             timeSlot = clearTimeSlot();
         }
 
@@ -56,14 +61,11 @@ public class Main {
 
         System.out.println("\n\nTotal time spent transmitting " + numberOfTags + " RFID tags: "
                 + (endTime - startTime) / 1000000000.0
-                + " second(s)"
-                + " with "
-                + RfidReader.MAX_NUMBER_OF_TIME_SLOT
-                + " time slots.");
+                + " second(s)");
 
     }
 
     public static LinkedList<RfidTag> clearTimeSlot() {
-        return new LinkedList<RfidTag>(Collections.nCopies(RfidReader.MAX_NUMBER_OF_TIME_SLOT, null));
+        return new LinkedList<RfidTag>(Collections.nCopies(listOfRfidTags.size(), null));
     }
 }
